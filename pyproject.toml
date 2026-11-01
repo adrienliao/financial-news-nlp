@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "newsalpha"
+version = "0.1.0"
+description = "Financial headline sentiment with fine-tuned transformers and a timing aware event study"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Adrien Liao" }]
+dependencies = ["numpy>=1.24", "pandas>=2.1", "scikit-learn>=1.3", "torch>=2.1", "transformers>=4.40", "datasets>=2.18", "huggingface_hub>=0.23"]
+
+[project.optional-dependencies]
+dev = ["pytest>=7", "matplotlib>=3.7"]
+
+[tool.setuptools]
+packages = ["newsalpha"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
