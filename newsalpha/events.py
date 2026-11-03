@@ -68,8 +68,11 @@ def news_long_short(signal: pd.DataFrame, ar: pd.DataFrame, entry_lag: int = 2, 
                     threshold: float = 0.5) -> pd.Series:
     """Daily long-short on abnormal returns.
 
-    A stock enters the long (short) book `entry_lag` days after day 0 if its
-    score is above `threshold` (below `-threshold`) and stays for `hold` days.
+    A stock whose score is above `threshold` (below `-threshold`) is bought
+    (sold) at the close of day `entry_lag - 1`, so it earns abnormal returns
+    from day `entry_lag` to day `entry_lag + hold - 1`. With the default
+    entry_lag=2 the trade happens at the close of day 1, the first moment we
+    are sure the story is public.
     Each side is equally weighted across the names it holds that day.
     """
     days = ar.index
@@ -78,7 +81,7 @@ def news_long_short(signal: pd.DataFrame, ar: pd.DataFrame, entry_lag: int = 2, 
     for d, t, s in signal[["day0", "ticker", "score"]].itertuples(index=False):
         if t not in pos.columns or d not in idx or abs(s) < threshold:
             continue
-        i = idx[d] + entry_lag
+        i = idx[d] + entry_lag - 1
         pos.iloc[i:i + hold, pos.columns.get_loc(t)] += np.sign(s)
     longs, shorts = pos.clip(lower=0), (-pos).clip(lower=0)
     lw = longs.div(longs.sum(axis=1).replace(0, np.nan), axis=0).fillna(0)
